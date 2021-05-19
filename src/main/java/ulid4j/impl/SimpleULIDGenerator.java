@@ -2,10 +2,11 @@ package ulid4j.impl;
 
 import ulid4j.api.ULID;
 import ulid4j.api.ULIDGenerator;
+import ulid4j.api.exceptions.ULIDFormatException;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class SimpleULIDGenerator implements ULIDGenerator {
@@ -55,7 +56,27 @@ public class SimpleULIDGenerator implements ULIDGenerator {
     private final static byte MASK_1LBS = Byte.parseByte("00000001", 2);
 
     private static byte getValueOfChar(char c) {
-        return CHAR_TO_VALUES[c];
+        if(c>128 || c<0) {
+            throw new ULIDFormatException("none-ascii character ["+c+"]");
+        }
+        byte b =  CHAR_TO_VALUES[c];
+        if(b==0 && c!='0')
+            throw new ULIDFormatException("illegal character ["+c+"]");
+
+        return b;
+    }
+
+    private static void validateFormat(String id) {
+        if(id.length()<13+14+1) {
+            throw new ULIDFormatException("id length at least must be 28 characters");
+        }
+        if(id.charAt(13) != '-') {
+            throw new ULIDFormatException("13th character is always a '-'");
+        }
+        if(id.charAt(id.length()-14-1) != '-') {
+            throw new ULIDFormatException("length-14 character is always a '-'");
+        }
+
     }
 
     private static long getLongFromStringId(String id, final int startIndex) {
@@ -115,11 +136,34 @@ public class SimpleULIDGenerator implements ULIDGenerator {
         this.timestampSupplier = timestampSupplier;
         this.secureSupplier = secureSupplier;
 
+        if(id==null) {
+            id = new byte[0];
+        }
 
         int idLen = (id.length*8)%5==0?(id.length*8)/5:(id.length*8)/5+1;
 
-        chars = new char[13+idLen+7+7+2];
-        chars[13] = '-';
+
+
+        if(idLen<=0) {
+            chars = new char[13+0+7+7+1]; //idLen = 0
+            chars[13] = '-';
+            afterIdIndex = 12+1+idLen+1; //12 char time , 1 dash , 0 len , 1 to point to empty
+        } else {
+            chars = new char[13+idLen+7+7+2]; //idLen = 0
+            chars[13] = '-';
+            chars[13+idLen+1] = '-';
+            afterIdIndex = 12+1+idLen+1+1; //12 char time , 1 dash , n idLen , 1 dash , 1 to point to empty
+        }
+
+        initializeIdSection(id);
+
+    }
+
+    private void initializeIdSection(byte[] id) {
+
+        if(id==null || id.length==0) {
+            return;
+        }
 
         BigInteger idAsBigInt= new BigInteger(id);
         int remBits = id.length*8;
@@ -147,10 +191,6 @@ public class SimpleULIDGenerator implements ULIDGenerator {
                 }
             }
         }
-
-        chars[14+idLen] = '-';
-
-        afterIdIndex = 14+idLen+1;
     }
 
     private void setTimeAndIncrementCounter() {
@@ -178,16 +218,16 @@ public class SimpleULIDGenerator implements ULIDGenerator {
         setTimeAndIncrementCounter();
 
 
-        chars[0] = VALUES[get5LBSValue(now>>59)];
-        chars[1] = VALUES[get5LBSValue(now>>54)];
-        chars[2] = VALUES[get5LBSValue(now>>49)];
-        chars[3] = VALUES[get5LBSValue(now>>44)];
-        chars[4] = VALUES[get5LBSValue(now>>39)];
-        chars[5] = VALUES[get5LBSValue(now>>34)];
-        chars[6] = VALUES[get5LBSValue(now>>29)];
-        chars[7] = VALUES[get5LBSValue(now>>24)];
-        chars[8] = VALUES[get5LBSValue(now>>19)];
-        chars[9] = VALUES[get5LBSValue(now>>14)];
+        chars[0]  = VALUES[get5LBSValue(now>>59)];
+        chars[1]  = VALUES[get5LBSValue(now>>54)];
+        chars[2]  = VALUES[get5LBSValue(now>>49)];
+        chars[3]  = VALUES[get5LBSValue(now>>44)];
+        chars[4]  = VALUES[get5LBSValue(now>>39)];
+        chars[5]  = VALUES[get5LBSValue(now>>34)];
+        chars[6]  = VALUES[get5LBSValue(now>>29)];
+        chars[7]  = VALUES[get5LBSValue(now>>24)];
+        chars[8]  = VALUES[get5LBSValue(now>>19)];
+        chars[9]  = VALUES[get5LBSValue(now>>14)];
         chars[10] = VALUES[get5LBSValue(now>>9)];
         chars[11] = VALUES[get5LBSValue(now>>4)];
         chars[12] = VALUES[(((byte)now&MASK_4LBS)&0xff)];
@@ -223,7 +263,7 @@ public class SimpleULIDGenerator implements ULIDGenerator {
 
     @Override
     public ULID from(String from) {
-
+        validateFormat(from);
         return new ULIDImpl(getLongFromStringId(from, 0),
                 getIntFromStringId(from, from.length()-14),
                 getIntFromStringId(from, from.length()-7), from);

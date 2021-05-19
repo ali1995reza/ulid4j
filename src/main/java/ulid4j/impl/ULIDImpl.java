@@ -1,6 +1,7 @@
 package ulid4j.impl;
 
 import ulid4j.api.ULID;
+import ulid4j.api.exceptions.ULIDException;
 
 import java.util.Objects;
 
@@ -13,26 +14,31 @@ final class ULIDImpl implements ULID {
     private final String stringValue;
 
     public ULIDImpl(long timestamp, int counter, int secure, String stringValue) {
+        if (timestamp < 0) {
+            throw new ULIDException("ulid timestamp can not be less than 0");
+        }
+        if (counter < 0) {
+            throw new ULIDException("ulid counter can not be less than 0");
+        }
         this.timestamp = timestamp;
         this.counter = counter;
         this.secure = secure;
         this.stringValue = stringValue;
     }
 
-
     @Override
     public long timestamp() {
-        return 0;
+        return timestamp;
     }
 
     @Override
     public int counter() {
-        return 0;
+        return counter;
     }
 
     @Override
     public int secure() {
-        return 0;
+        return secure;
     }
 
     @Override
