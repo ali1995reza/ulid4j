@@ -36,7 +36,7 @@ In this library we have 2 simple class :
 | `timestamp()`        | `long`          | return the timestamp that this ULID created in         |
 | `counter()`          | `int`           | return the value of the counter when this ULID created |
 | `secure()`           | `int`           | return the random secure value of this ULID            |
-| `toStrutureString()` | `int`           | return the ULID as structured human-readable string    |
+| `toStrutureString()` | `String`           | return the ULID as structured human-readable string    |
 
 ### ULIDGenerator
 
