@@ -6,18 +6,18 @@ A simple library to create ULID in java !
 
 ## ULID Structure
 
-Structure of how a string reperesents a ULID is specify by implmentions,
-but there is some things to discus :
+Structure of how a string represents a ULID is determined by implementations,
+but there are some things to discus :
 
 - **Time Sorted** :  ULID id must be time sorted, it means we have to 
     put time bits in [MSB](https://en.wikipedia.org/wiki/Bit_numbering).
-- **Universaly Unique** : ULID must be universaly unique, it means 
+- **Universally Unique** : ULID must be universally unique, it means 
     if 2 difference machines create ULIDs concurrently this ULIDs should be unique.
-    We can use a machine-idifinder after time bits to sparate machines from each other.
-    There is many idifinder like Node ID in clusters and in a wider world 
-    we can use MAC address as machine-idifinder.
-- **Counted** : ULID id must be sorted even if 2 ULID created in a same tiem.
-    For this problem we can use some counter bits after machine-idifinder bits.
+    We can use a machine-identifier after time bits to separate machines from each other.
+    There are many identifiers like Node ID in clusters and in a wider world 
+    we can use MAC address as machine-identifier.
+- **Counted** : ULID id must be sorted even if 2 ULID created in a same time.
+    For this problem we can use some counter bits after machine-identifier bits.
     If counter reset period be short, 32 bits can be enough.
 - **Secure** : This is optional, maybe it's better a ULID be secure,
     it means no one knows what is the next ULID created on a machine.
@@ -57,7 +57,7 @@ I just implement a Simple ULIDGenerator in this library.
 | 64 bits time millisecond | n-bits machine-idifinder | 32 bits counter | 32 bits secure |
 | :----------------------- | :------------------------ | :-------------- | :------------- |
 
-In this Implemention I just encode each **5** bits into a character.
+In this implementation I just encode each **5** bits into a character.
 
 for a `64 bits long` it will produce **13** characters.
 
@@ -88,7 +88,7 @@ ULID ulid = generator.generate();
 
 ```
 
-### Reperesents ULID from a string format
+### Represents ULID from a string format
 
 ```
 
