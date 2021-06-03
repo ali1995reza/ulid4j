@@ -54,7 +54,7 @@ I just implement a Simple ULIDGenerator in this library.
 
 #### Structure
 
-| 64 bits time millisecond | n-bits machine-idifinder | 32 bits counter | 32 bits secure |
+| 64 bits time millisecond | n-bits machine-identifier | 32 bits counter | 32 bits secure |
 | :----------------------- | :------------------------ | :-------------- | :------------- |
 
 In this implementation I just encode each **5** bits into a character.
@@ -73,7 +73,7 @@ for a `32 bits int` it will produce **7** characters.
 
 ```
 ULIDGenerator generator = new SimpleULIDGenerator(
-                ByteBuffer.allocate(4).putInt(new SecureRandom().nextInt()).array() // machine-idifinder ,
+                ByteBuffer.allocate(4).putInt(new SecureRandom().nextInt()).array() // machine-identifier ,
                 System::currentTimeMillis // time milliseconds Supplier ,
                 new SecureRandom()::nextInt // secure random Supplier
         );
