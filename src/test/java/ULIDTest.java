@@ -19,10 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ULIDTest {
 
-    private ULIDGenerator generator;
+    private final ULIDGenerator generator;
 
-    @BeforeAll
-    public void initializeGenerator() {
+    public ULIDTest() {
         generator = new SimpleULIDGenerator(
                 ByteBuffer.allocate(4).putInt(new SecureRandom().nextInt()).array() ,
                 System::currentTimeMillis ,
@@ -34,7 +33,7 @@ public class ULIDTest {
     @DisplayName("Test collision and sort")
     public void testSortAndDuplication() {
 
-        final int round = 10000000; //ten million tries
+        final int round = 1000000; //ten million tries
         ULID ulid = generator.generate();
 
         for(int i=0;i<round;i++) {
@@ -58,10 +57,10 @@ public class ULIDTest {
             assertThat(withId.counter()).isEqualTo(withoutId.counter());
             assertThat(withId.secure()).isEqualTo(withoutId.secure());
         });
-        assertThrows(ULIDFormatException.class, ()->{generator.from("00002zc3sksfe-0681-0047qo10tbl7t0");}); // illegal char error
-        assertThrows(ULIDFormatException.class, ()->{generator.from("00002zc3sksfe-0047qo0tbl7t0");}); //size error
-        assertThrows(ULIDFormatException.class, ()->{generator.from("00002uc3sksfe0047qo10tbl7t00");}); //no separator -
-        assertThrows(ULIDFormatException.class, ()->{generator.from("00002سc3sksfe-0681-0047qo10tbl7t0");}); //none-ascii character
+        assertThrows(ULIDFormatException.class, ()-> generator.from("00002zc3sksfe-0681-0047qo10tbl7t0")); // illegal char error
+        assertThrows(ULIDFormatException.class, ()-> generator.from("00002zc3sksfe-0047qo0tbl7t0")); //size error
+        assertThrows(ULIDFormatException.class, ()-> generator.from("00002uc3sksfe0047qo10tbl7t00")); //no separator -
+        assertThrows(ULIDFormatException.class, ()-> generator.from("00002سc3sksfe-0681-0047qo10tbl7t0")); //none-ascii character
     }
 
 
