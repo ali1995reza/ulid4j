@@ -4,6 +4,20 @@
 A simple library to create ULID in java !
 
 
+### Getting Started
+
+To add library in your project you can simply add this dependency:
+
+```xml
+
+<dependency>
+    <groupId>io.github.ali1995reza</groupId>
+    <artifactId>ulid4j</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+
 ## ULID Structure
 
 Structure of how a string represents a ULID is determined by implementations,
