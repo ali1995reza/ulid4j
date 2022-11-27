@@ -13,7 +13,7 @@ To add library in your project you can simply add this dependency:
 <dependency>
     <groupId>io.github.ali1995reza</groupId>
     <artifactId>ulid4j</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
